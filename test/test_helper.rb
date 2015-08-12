@@ -15,7 +15,7 @@ class ActiveSupport::TestCase
   end
 
   # Add more helper methods to be used by all tests here...
-  def log_in_as(user, options)
+  def log_in_as(user, options={})
     password = options[:password] || 'password'
     remember_me = options[:remember_me] || '1'
     if integration_test?
@@ -27,6 +27,6 @@ class ActiveSupport::TestCase
 
   private
     def integration_test?
-      defined? :post_via_redirect
+      respond_to? :post_via_redirect
     end
 end

@@ -9,7 +9,7 @@ class User < ActiveRecord::Base
   validates :email, length: {maximum: 255},
             format: {with: VALID_EMAIL_REGEX},
             uniqueness: {case_sensitive: false}
-  validates :password, length: {minimum: 6}
+  validates :password, length: {minimum: 6}, allow_blank: true
 
   before_save do
     self.email = email.downcase
@@ -39,8 +39,14 @@ class User < ActiveRecord::Base
     BCrypt::Password.new(remember_digest).is_password?(remember_token)
   end
 
+  # 忘记持久登入
   def forget
     update_attribute(:remember_digest, nil)
+  end
+
+  # 是否是管理员
+  def admin?
+    admin
   end
 
 end

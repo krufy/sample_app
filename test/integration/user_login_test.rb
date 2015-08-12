@@ -6,6 +6,7 @@ class UserLoginTest < ActionDispatch::IntegrationTest
   # end
   setup do
     @user = users(:mike)
+    @other_user = users(:jordan)
   end
 
   test "log in with invalid information" do
@@ -50,4 +51,17 @@ class UserLoginTest < ActionDispatch::IntegrationTest
     log_in_as(@user, remember_me: '0')
     assert_nil cookies['remember_token']
   end
+
+  test "should redirect edit when logged in as wrong user" do
+    log_in_as(@other_user)
+    get edit_user_path(@user)
+    assert_redirected_to root_path
+  end
+
+  test "should redirect update when logged in as wrong user"  do
+    log_in_as(@other_user)
+    patch user_path(@user), user: {name: @user.name, email: @user.email}
+    assert_redirected_to root_path
+  end
+
 end
