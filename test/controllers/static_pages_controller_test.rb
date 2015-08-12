@@ -28,15 +28,4 @@ class StaticPagesControllerTest < ActionController::TestCase
     assert_response :success
     assert_select 'title', full_title('Contact')
   end
-
-  test "name should not be too long" do
-    @user.name = 'a' * 51
-    assert_not user.valid?
-  end
-
-  test "email should not be too long" do
-    @user.name = 'a' * 244 + '@example.com'
-    assert_not user.valid?
-  end
-
 end
