@@ -64,15 +64,14 @@ class User < ActiveRecord::Base
 
   # 激活用户
   def activate
-    update_attribute(:activated, true)
-    update_attribute(:activated_at, Time.zone.now)
+    update_columns(activated: true, activated_at: Time.zone.now)
   end
 
   # 生成密码重置摘要
   def create_reset_digest
     self.reset_token = User.new_token
-    update_attribute(:reset_digest, User.digest(self.reset_token))
-    update_attribute(:reset_sent_at, Time.zone.now)
+    update_columns(reset_digest: User.digest(self.reset_token),
+                   reset_sent_at: Time.zone.now)
   end
 
   # 发送密码重置密码

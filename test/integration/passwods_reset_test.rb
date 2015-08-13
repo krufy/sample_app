@@ -72,4 +72,18 @@ class PasswodsResetTest < ActionDispatch::IntegrationTest
     assert is_logged_in?
     assert_redirected_to @user
   end
+
+  test 'expired token' do
+    get new_password_path
+    post passwords_path, email: @user.email
+    @user = assigns(:user)
+    @user.update_attribute(:reset_sent_at, 3.hours.ago)
+    get edit_password_path(@user.reset_token, email: @user.email)
+    patch password_path(@user.reset_token),
+      email: @user.email,
+      user: {password: '12345678', password_confirmation: '12345678'}
+    assert_response :redirect
+    follow_redirect!
+    assert_match /过期/, response.body
+  end
 end
