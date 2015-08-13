@@ -1,5 +1,6 @@
 class User < ActiveRecord::Base
   attr_accessor :remember_token
+  attr_accessor :activation_token
 
   has_secure_password
 
@@ -14,6 +15,8 @@ class User < ActiveRecord::Base
   before_save do
     self.email = email.downcase
   end
+
+  before_create :create_activation_digest
 
   # 返回指定字符串的哈希摘要
   def self.digest(str)
@@ -34,9 +37,10 @@ class User < ActiveRecord::Base
   end
 
   # 验证令牌环的有效性
-  def authenticated?(remember_token)
-    return false if remember_digest.nil?
-    BCrypt::Password.new(remember_digest).is_password?(remember_token)
+  def authenticated?(attribute, token)
+    digest = send("#{attribute}_digest")
+    return false if digest.nil?
+    BCrypt::Password.new(digest).is_password?(token)
   end
 
   # 忘记持久登入
@@ -49,4 +53,25 @@ class User < ActiveRecord::Base
     admin
   end
 
+  # 是否激活
+  def activated?
+    activated
+  end
+
+  # 发送激活邮件
+  def send_activation_email
+    UserMailer.account_activate(self).deliver_now
+  end
+
+  # 激活用户
+  def activate
+    update_attribute(:activated, true)
+    update_attribute(:activated_at, Time.zone.now)
+  end
+
+  private
+    def create_activation_digest
+      self.activation_token =  User.new_token
+      self.activation_digest = User.digest(activation_token)
+    end
 end
