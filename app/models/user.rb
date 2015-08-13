@@ -1,6 +1,5 @@
 class User < ActiveRecord::Base
-  attr_accessor :remember_token
-  attr_accessor :activation_token
+  attr_accessor :remember_token, :activation_token, :reset_token
 
   has_secure_password
 
@@ -67,6 +66,23 @@ class User < ActiveRecord::Base
   def activate
     update_attribute(:activated, true)
     update_attribute(:activated_at, Time.zone.now)
+  end
+
+  # 生成密码重置摘要
+  def create_reset_digest
+    self.reset_token = User.new_token
+    update_attribute(:reset_digest, User.digest(self.reset_token))
+    update_attribute(:reset_sent_at, Time.zone.now)
+  end
+
+  # 发送密码重置密码
+  def send_password_reset_email
+    UserMailer.password_reset(self).deliver_now
+  end
+
+  # 重置摘要是否过期
+  def password_reset_expired?
+    reset_sent_at < 2.hours.ago
   end
 
   private
