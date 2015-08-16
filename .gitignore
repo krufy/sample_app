@@ -17,6 +17,7 @@
 /tmp
 
 spring/
+/public/uploads
 
 *.swp
 *.swo
