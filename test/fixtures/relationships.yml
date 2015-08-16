@@ -1,0 +1,20 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+one:
+  followed: mike
+  follower: jordan
+
+two:
+  followed: jordan
+  follower: mike
+
+three:
+  followed: mike
+  follower: lila
+
+four:
+  followed: lina
+  follower: mike
+
+five:
+  followed: mike
+  follower: panda

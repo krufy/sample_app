@@ -69,4 +69,36 @@ class UserTest < ActiveSupport::TestCase
     assert_not @user.authenticated?(:remember, '')
   end
 
+  test 'should follow a user and unfollow a user' do
+    mike = users(:mike)
+    panda = users(:panda)
+    assert_not mike.following?(panda)
+    mike.follow(panda)
+    assert mike.following?(panda)
+    assert panda.followers.include?(mike)
+    # 取消关注
+    mike.unfollow(panda)
+    assert_not mike.following?(panda)
+  end
+
+  test "feed should have the right posts" do
+    mike = users(:mike)
+    jordan = users(:jordan)
+    panda = users(:panda)
+
+    # 关注的用户发布的微博
+    jordan.microposts.each do |post_following|
+      assert mike.feed.include?(post_following)
+    end
+
+    # 自己的微博
+    mike.microposts.each do |post_self|
+      assert mike.feed.include?(post_self)
+    end
+
+    # 未关注用户的微博
+    panda.microposts.each do |post_unfollowed|
+      assert_not mike.feed.include?(post_unfollowed)
+    end
+  end
 end
